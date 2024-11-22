@@ -13,14 +13,19 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".", // เพิ่มเพื่อให้ Path Alias ใช้งานได้
+    "paths": {
+      "@/*": ["./*"], // ตั้งค่า Path Alias
+      "@/features/*": ["app/features/*"], // ชี้ไปที่โฟลเดอร์ features
+      "@/services/*": ["app/services/*"], // ชี้ไปที่โฟลเดอร์ services
+      "@/utils/*": ["app/utils/*"], // ชี้ไปที่โฟลเดอร์ utils
+      "@/hooks/*": ["app/hooks/*"] // ชี้ไปที่โฟลเดอร์ hooks
+    },
     "plugins": [
       {
         "name": "next"
       }
-    ],
-    "paths": {
-      "@/*": ["./*"]
-    }
+    ]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
