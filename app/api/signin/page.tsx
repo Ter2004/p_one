@@ -2,32 +2,38 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { register } from '@/app/services/authservice';
+import Link from 'next/link'; // Import Link สำหรับสร้างลิงก์
+import { login } from '@/app/services/authservice';
 
-export default function SignUp() {
+export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSignUp = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-      await register(email, password);
-      router.push('/signin');
+      const data = await login(email, password);
+
+      if (data.role === 'admin') {
+        router.push('/dashboard/admin');
+      } else {
+        router.push('/dashboard/user');
+      }
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || 'Login failed');
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-blue-100">
       <div className="bg-white p-6 rounded shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center mb-4">Sign Up</h1>
+        <h1 className="text-2xl font-bold text-center mb-4">Login</h1>
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        <form onSubmit={handleSignUp}>
+        <form onSubmit={handleSignIn}>
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-bold mb-2 text-gray-700">
               Email
@@ -58,9 +64,16 @@ export default function SignUp() {
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
           >
-            Sign Up
+            Login
           </button>
         </form>
+
+        <p className="mt-4 text-center text-sm text-gray-700">
+          Don’t have an account?{' '}
+          <Link href="/signup" className="text-blue-500 hover:underline">
+            Signup
+          </Link>
+        </p>
       </div>
     </div>
   );
