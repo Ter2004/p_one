@@ -2,23 +2,37 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { login } from '@/app/services/authservice'; // เรียกใช้ฟังก์ชัน login จาก authservice
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add your login logic here
-    console.log('Login attempted with', email, password);
+    setError(''); // Clear error ก่อนการ Login
+
+    try {
+      const data = await login(email, password); // Login API
+      // Redirect based on user role
+      if (data.role === 'admin') {
+        router.push('/dashboard/admin');
+      } else {
+        router.push('/dashboard/user');
+      }
+    } catch (err: any) {
+      setError(err.message || 'Login failed. Please try again.');
+    }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-blue-100">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-6 text-black">Login</h1>
+        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>} {/* แสดง Error */}
         <form onSubmit={handleLogin}>
           {/* Email Input */}
           <div className="mb-4">
@@ -59,7 +73,7 @@ export default function Login() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-3 text-gray-600 hover:text-gray-800 focus:outline-none"
+              className="absolute right-3 top-8 text-gray-600 hover:text-gray-800 focus:outline-none"
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
