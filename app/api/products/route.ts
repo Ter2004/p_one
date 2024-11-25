@@ -4,19 +4,19 @@ import { NextResponse } from 'next/server';
 let mockProducts = [
   {
     id: 1,
-    name: 'Shibuya Totepack',
+    name: 'Rick Owens Geobasket Leather Sneaker In Black Milk',
     price: 140.0,
     image: '/images/totepack.jpg',
   },
   {
     id: 2,
-    name: 'Kensington Backpack',
+    name: 'Rick Owens DRKSHDW Canvas Low Top Black Milk',
     price: 200.0,
     image: '/images/backpack.jpg',
   },
   {
     id: 3,
-    name: 'Osaka Messenger Bag',
+    name: 'Rick Owens DRKSHDW Lido Vintage Low Black Milk',
     price: 180.0,
     image: '/images/messenger.jpg',
   },

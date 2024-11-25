@@ -11,9 +11,9 @@ export default function Home() {
       <div className="text-center">
         {/* Updated Image Component */}
         <Image
-          src="https://png.pngtree.com/png-clipart/20211009/original/pngtree-shopping-online-text-effect-png-image_6845783.png"
+          src="/images/logo.jpg" // Reference the image from the public folder
           alt="Shopping Online"
-          width={200} // Adjust width
+          width={500} // Adjust width
           height={100} // Adjust height
           className="mx-auto mb-4"
         />

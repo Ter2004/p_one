@@ -34,7 +34,7 @@ export default function RootLayout({
           <div className="container mx-auto flex justify-between items-center p-4">
             <h1 className="text-2xl font-bold text-black !text-black">
               <a href="/" aria-label="Navigate to Home">
-                Ter Store
+                SneakTer Store
               </a>
             </h1>
             {/* Removed Navigation */}
