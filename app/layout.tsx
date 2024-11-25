@@ -32,30 +32,12 @@ export default function RootLayout({
         {/* Header */}
         <header className="bg-blue-600 text-white shadow-md">
           <div className="container mx-auto flex justify-between items-center p-4">
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-black !text-black">
               <a href="/" aria-label="Navigate to Home">
-                My App
+                Ter Store
               </a>
             </h1>
-            <nav aria-label="Main Navigation">
-              <ul className="flex space-x-4">
-                <li>
-                  <a href="/" className="hover:underline" aria-current="page">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a href="/about" className="hover:underline">
-                    About
-                  </a>
-                </li>
-                <li>
-                  <a href="/contact" className="hover:underline">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </nav>
+            {/* Removed Navigation */}
           </div>
         </header>
 
