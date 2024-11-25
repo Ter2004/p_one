@@ -2,29 +2,38 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/app/services/authservice'; // เรียกใช้ฟังก์ชัน login จาก authservice
+import { login } from '@/app/services/authservice'; // Import login function
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
+    if (loading) return; // Prevent duplicate login attempts
     e.preventDefault();
-    setError(''); // Clear error ก่อนการ Login
+    setError(''); // Clear previous errors
+    setLoading(true); // Set loading state to true
+
+    if (!email || !password) {
+      setError('Please fill out all fields.');
+      setLoading(false); // Reset loading state
+      return;
+    }
 
     try {
-      const data = await login(email, password); // Login API
-      // Redirect based on user role
-      if (data.role === 'admin') {
-        router.push('/dashboard/admin');
-      } else {
-        router.push('/dashboard/user');
-      }
+      const data = await login(email, password); // Call login API
+
+      // Redirect all users (admin and user) to the main page after login
+      router.push('/main');
+      console.log(`${data.role} login successful!`); // Log the role
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false); // Reset loading state
     }
   };
 
@@ -32,7 +41,7 @@ export default function Login() {
     <div className="flex items-center justify-center min-h-screen bg-blue-100">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-6 text-black">Login</h1>
-        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>} {/* แสดง Error */}
+        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>} {/* Show error message */}
         <form onSubmit={handleLogin}>
           {/* Email Input */}
           <div className="mb-4">
@@ -49,7 +58,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-black"
-              placeholder="Email"
+              placeholder="Enter your email"
             />
           </div>
 
@@ -68,7 +77,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-black"
-              placeholder="Password"
+              placeholder="Enter your password"
             />
             <button
               type="button"
@@ -92,9 +101,12 @@ export default function Login() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300"
+            className={`w-full py-2 px-4 font-bold rounded-lg transition duration-300 ${
+              loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'
+            }`}
+            disabled={loading} // Disable button when loading
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 

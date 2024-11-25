@@ -1,53 +1,68 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { fetchUsers } from '@/app/services/userService';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-export default function ManageUsers() {
-  const [users, setUsers] = useState<any[]>([]); // State สำหรับเก็บข้อมูลผู้ใช้งาน
-  const [error, setError] = useState<string | null>(null); // State สำหรับเก็บ Error
+export default function AdminDashboard() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true); // State for loading
+  const [error, setError] = useState<string | null>(null); // State for error handling
 
-  // ใช้ useEffect ดึงข้อมูลจาก API
   useEffect(() => {
-    const getUsers = async () => {
+    const validateAdminAccess = () => {
       try {
-        const data = await fetchUsers();
-        setUsers(data); // ตั้งค่าข้อมูลผู้ใช้งาน
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch users.');
+        const userData = JSON.parse(localStorage.getItem('user') || '{}');
+
+        // Check if user data exists and has the admin role
+        if (!userData || userData.role !== 'admin') {
+          setError('Unauthorized access. Redirecting to login.');
+          router.push('/login'); // Redirect to Login if not an admin
+        }
+      } catch (error) {
+        console.error('Error validating admin access:', error);
+        setError('An error occurred. Redirecting to login.');
+        router.push('/login'); // Redirect in case of an error
+      } finally {
+        setLoading(false); // Stop the loading spinner
       }
     };
 
-    getUsers();
-  }, []);
+    validateAdminAccess();
+  }, [router]);
+
+  if (loading) {
+    return <p className="text-center text-black">Loading...</p>; // Display a loading message
+  }
 
   if (error) {
-    return <p className="text-red-500">{error}</p>; // แสดงข้อความ Error
+    return <p className="text-center text-red-500">{error}</p>; // Display error message if needed
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold">Manage Users</h1>
-      <table className="table-auto w-full mt-4 border-collapse border border-gray-200">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="border border-gray-200 p-2">ID</th>
-            <th className="border border-gray-200 p-2">Name</th>
-            <th className="border border-gray-200 p-2">Email</th>
-            <th className="border border-gray-200 p-2">Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="text-center">
-              <td className="border border-gray-200 p-2">{user.id}</td>
-              <td className="border border-gray-200 p-2">{user.name}</td>
-              <td className="border border-gray-200 p-2">{user.email}</td>
-              <td className="border border-gray-200 p-2">{user.role}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold text-black">Admin Dashboard</h1>
+      <div className="grid grid-cols-2 gap-4 mt-4">
+        <div className="bg-blue-200 p-4 rounded shadow">
+          <h2 className="font-semibold text-black">Manage Users</h2>
+          <p className="text-black">จัดการข้อมูลผู้ใช้งาน</p>
+          <a
+            href="/dashboard/admin/manage-users"
+            className="text-blue-500 hover:underline"
+          >
+            Go to Manage Users
+          </a>
+        </div>
+        <div className="bg-green-200 p-4 rounded shadow">
+          <h2 className="font-semibold text-black">View Metrics</h2>
+          <p className="text-black">ดูข้อมูลสถิติ</p>
+          <a
+            href="/dashboard/admin/view-metrics"
+            className="text-green-500 hover:underline"
+          >
+            Go to Metrics
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
