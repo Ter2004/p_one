@@ -22,7 +22,7 @@ let mockProducts = [
   },
 ];
 
-// GET handler for fetching products
+// **GET handler**: Fetch all products
 export async function GET() {
   try {
     return NextResponse.json(
@@ -46,18 +46,18 @@ export async function GET() {
   }
 }
 
-// POST handler for adding a new product
+// **POST handler**: Add a new product
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
     // Validate input fields
     const { name, price, image } = body;
-    if (!name || !price || !image) {
+    if (!name || typeof name !== 'string' || !price || typeof price !== 'number' || !image || typeof image !== 'string') {
       return NextResponse.json(
         {
           success: false,
-          message: 'Invalid input. All fields are required.',
+          message: 'Invalid input. All fields (name, price, image) are required.',
         },
         { status: 400 }
       );
@@ -65,9 +65,9 @@ export async function POST(req: Request) {
 
     // Create a new product
     const newProduct = {
-      id: mockProducts.length + 1,
+      id: mockProducts.length ? mockProducts[mockProducts.length - 1].id + 1 : 1,
       name,
-      price,
+      price: parseFloat(price.toString()),
       image,
     };
 
@@ -88,6 +88,110 @@ export async function POST(req: Request) {
       {
         success: false,
         message: 'Failed to add product.',
+        error: error.message || 'Unknown error occurred.',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// **DELETE handler**: Delete a product
+export async function DELETE(req: Request) {
+  try {
+    const body = await req.json();
+    const { id } = body;
+
+    // Validate input
+    if (!id || typeof id !== 'number') {
+      return NextResponse.json(
+        { success: false, message: 'Invalid product ID.' },
+        { status: 400 }
+      );
+    }
+
+    // Remove product from the mock data
+    const filteredProducts = mockProducts.filter((product) => product.id !== id);
+
+    if (filteredProducts.length === mockProducts.length) {
+      return NextResponse.json(
+        { success: false, message: 'Product not found.' },
+        { status: 404 }
+      );
+    }
+
+    mockProducts = filteredProducts;
+
+    return NextResponse.json(
+      { success: true, message: 'Product deleted successfully.' },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Error deleting product:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Failed to delete product.',
+        error: error.message || 'Unknown error occurred.',
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// **PATCH handler**: Update a product
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, name, price, image } = body;
+
+    // Validate input
+    if (
+      !id ||
+      typeof id !== 'number' ||
+      !name ||
+      typeof name !== 'string' ||
+      !price ||
+      typeof price !== 'number' ||
+      !image ||
+      typeof image !== 'string'
+    ) {
+      return NextResponse.json(
+        { success: false, message: 'Invalid input. All fields are required for update.' },
+        { status: 400 }
+      );
+    }
+
+    // Find and update the product
+    const productIndex = mockProducts.findIndex((product) => product.id === id);
+    if (productIndex === -1) {
+      return NextResponse.json(
+        { success: false, message: 'Product not found.' },
+        { status: 404 }
+      );
+    }
+
+    const updatedProduct = {
+      ...mockProducts[productIndex],
+      name,
+      price: parseFloat(price.toString()),
+      image,
+    };
+    mockProducts[productIndex] = updatedProduct;
+
+    return NextResponse.json(
+      {
+        success: true,
+        data: updatedProduct,
+        message: 'Product updated successfully.',
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error('Error updating product:', error);
+    return NextResponse.json(
+      {
+        success: false,
+        message: 'Failed to update product.',
         error: error.message || 'Unknown error occurred.',
       },
       { status: 500 }
