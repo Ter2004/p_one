@@ -2,39 +2,39 @@
 
 import { useEffect, useState } from 'react';
 
-// กำหนด Type สำหรับข้อมูลของ Product
+// Define Type for Product Data
 interface Product {
-  id: number;
+  id: string; // Updated to match Prisma default ID type
   name: string;
   price: number;
   image: string;
 }
 
 export default function ShopPage() {
-  const [products, setProducts] = useState<Product[]>([]); // กำหนด Type ให้กับ products
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]); // Define type for products
+  const [loading, setLoading] = useState(true); // Loading state
+  const [error, setError] = useState<string | null>(null); // Error state
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('/api/products');
+        const response = await fetch('/api/products'); // Fetch data from API
         if (!response.ok) {
-          throw new Error('Failed to fetch products');
+          throw new Error('Failed to fetch products'); // Handle HTTP errors
         }
         const result = await response.json();
 
-        // ตรวจสอบว่า API ส่งข้อมูลในรูปแบบที่คาดหวัง
-        if (result.success) {
-          setProducts(result.data); // ใช้ result.data แทน
+        // Validate API response structure
+        if (result.success && Array.isArray(result.data)) {
+          setProducts(result.data); // Use `result.data` for products
         } else {
-          throw new Error(result.message || 'Failed to fetch products');
+          throw new Error(result.message || 'Unexpected API response');
         }
       } catch (error: any) {
         console.error('Error fetching products:', error);
-        setError(error.message);
+        setError(error.message || 'Unknown error occurred');
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loading spinner
       }
     };
 
@@ -42,11 +42,11 @@ export default function ShopPage() {
   }, []);
 
   if (loading) {
-    return <p>Loading products...</p>;
+    return <p>Loading products...</p>; // Display loading state
   }
 
   if (error) {
-    return <p className="text-center text-red-500">Error: {error}</p>;
+    return <p className="text-center text-red-500">Error: {error}</p>; // Display error message
   }
 
   return (

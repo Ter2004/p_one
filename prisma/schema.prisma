@@ -14,33 +14,33 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  role      String   @default("user") // Either 'admin' or 'user'
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  carts     Cart[]   // Relation to Cart
+  id        String   @id @default(cuid())          // Unique ID for the user
+  email     String   @unique                      // Unique email for authentication
+  password  String                               // Password for the user
+  role      String   @default("user")             // Role: either 'admin' or 'user'
+  createdAt DateTime @default(now())              // Timestamp for when the user was created
+  updatedAt DateTime @updatedAt                   // Timestamp for the last update
+  carts     Cart[]                                // Relation to the Cart model
 }
 
 model Product {
-  id        String   @id @default(cuid())
-  name      String
-  price     Float
-  image     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  carts     Cart[]   // Relation to Cart
+  id        String   @id @default(cuid())         // Unique ID for the product
+  name      String                               // Product name
+  price     Float                                // Product price
+  image     String                               // URL for the product image
+  createdAt DateTime @default(now())             // Timestamp for when the product was created
+  updatedAt DateTime @updatedAt                  // Timestamp for the last update
+  carts     Cart[]                               // Relation to the Cart model
 }
 
 model Cart {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())         // Unique ID for the cart entry
+  userId    String                               // User ID associated with this cart entry
+  productId String                               // Product ID associated with this cart entry
+  quantity  Int      @default(1)                 // Quantity of the product in the cart
+  createdAt DateTime @default(now())             // Timestamp for when the cart entry was created
+  updatedAt DateTime @updatedAt                  // Timestamp for the last update
 
-  user    User    @relation(fields: [userId], references: [id])
-  product Product @relation(fields: [productId], references: [id])
+  user      User    @relation(fields: [userId], references: [id]) // Relation to the User model
+  product   Product @relation(fields: [productId], references: [id]) // Relation to the Product model
 }
