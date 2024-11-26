@@ -9,11 +9,13 @@ interface Product {
   name: string;
   price: number;
   image: string;
-  quantity: number; // Add quantity field
+  quantity: number;
+  size: string; // Added size field
 }
 
 export default function CartPage() {
   const [cart, setCart] = useState<Product[]>([]); // State for cart items
+  const [showSuccessModal, setShowSuccessModal] = useState(false); // State for success modal
   const router = useRouter();
 
   useEffect(() => {
@@ -29,12 +31,14 @@ export default function CartPage() {
   );
 
   // Handle removing a product from the cart
-  const handleRemoveFromCart = (id: string) => {
-    const updatedCart = cart.map((product) =>
-      product.id === id
-        ? { ...product, quantity: product.quantity - 1 }
-        : product
-    ).filter((product) => product.quantity > 0); // Remove item if quantity is 0
+  const handleRemoveFromCart = (id: string, size: string) => {
+    const updatedCart = cart
+      .map((product) =>
+        product.id === id && product.size === size
+          ? { ...product, quantity: product.quantity - 1 }
+          : product
+      )
+      .filter((product) => product.quantity > 0); // Remove item if quantity is 0
 
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
@@ -43,6 +47,16 @@ export default function CartPage() {
   // Navigate back to the Shop page
   const goToShop = () => {
     router.push('/shop');
+  };
+
+  // Handle purchase action
+  const handlePurchase = () => {
+    setCart([]); // Clear cart
+    localStorage.removeItem('cart'); // Remove cart from localStorage
+    setShowSuccessModal(true); // Show success modal
+    setTimeout(() => {
+      setShowSuccessModal(false); // Automatically close modal after 3 seconds
+    }, 3000);
   };
 
   return (
@@ -67,6 +81,9 @@ export default function CartPage() {
                   Product
                 </th>
                 <th className="border border-gray-300 px-4 py-2 text-center">
+                  Size
+                </th>
+                <th className="border border-gray-300 px-4 py-2 text-center">
                   Quantity
                 </th>
                 <th className="border border-gray-300 px-4 py-2 text-left">
@@ -79,7 +96,7 @@ export default function CartPage() {
             </thead>
             <tbody>
               {cart.map((product) => (
-                <tr key={product.id}>
+                <tr key={`${product.id}-${product.size}`}>
                   <td className="border border-gray-300 px-4 py-2 flex items-center">
                     <img
                       src={product.image}
@@ -89,14 +106,19 @@ export default function CartPage() {
                     <span>{product.name}</span>
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
+                    {product.size}
+                  </td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
                     {product.quantity}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
-                    ${product.price.toFixed(2)}
+                    ${(product.price * product.quantity).toFixed(2)}
                   </td>
                   <td className="border border-gray-300 px-4 py-2 text-center">
                     <button
-                      onClick={() => handleRemoveFromCart(product.id)}
+                      onClick={() =>
+                        handleRemoveFromCart(product.id, product.size)
+                      }
                       className="px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600"
                     >
                       Remove
@@ -110,14 +132,39 @@ export default function CartPage() {
             <p className="text-xl font-semibold">
               Total: ${totalPrice.toFixed(2)}
             </p>
-            <button
-              onClick={goToShop}
-              className="px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
-            >
-              Back to Shop
-            </button>
+            <div className="flex space-x-4">
+              <button
+                onClick={handlePurchase}
+                className="px-6 py-3 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600"
+              >
+                Purchase
+              </button>
+              <button
+                onClick={goToShop}
+                className="px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+              >
+                Back to Shop
+              </button>
+            </div>
           </div>
         </>
+      )}
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded shadow-lg text-center">
+            <h2 className="text-xl font-semibold mb-4">Purchase Successful!</h2>
+            <p className="text-gray-700 mb-4">
+              Thank you for your purchase. Your items will be delivered soon.
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="px-6 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

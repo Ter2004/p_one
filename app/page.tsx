@@ -7,7 +7,7 @@ export default function Home() {
   const router = useRouter(); // Initialize router
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="text-center">
         {/* Updated Image Component */}
         <Image
