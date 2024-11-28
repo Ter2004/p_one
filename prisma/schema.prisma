@@ -1,46 +1,40 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id        String   @id @default(cuid())          // Unique ID for the user
-  email     String   @unique                      // Unique email for authentication
-  password  String                               // Password for the user
-  role      String   @default("user")             // Role: either 'admin' or 'user'
-  createdAt DateTime @default(now())              // Timestamp for when the user was created
-  updatedAt DateTime @updatedAt                   // Timestamp for the last update
-  carts     Cart[]                                // Relation to the Cart model
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("user")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  carts     Cart[]
 }
 
 model Product {
-  id        String   @id @default(cuid())         // Unique ID for the product
-  name      String                               // Product name
-  price     Float                                // Product price
-  image     String                               // URL for the product image
-  createdAt DateTime @default(now())             // Timestamp for when the product was created
-  updatedAt DateTime @updatedAt                  // Timestamp for the last update
-  carts     Cart[]                               // Relation to the Cart model
+  id        String   @id @default(cuid())
+  name      String
+  price     Float
+  image     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  carts     Cart[]
 }
 
 model Cart {
-  id        String   @id @default(cuid())         // Unique ID for the cart entry
-  userId    String                               // User ID associated with this cart entry
-  productId String                               // Product ID associated with this cart entry
-  quantity  Int      @default(1)                 // Quantity of the product in the cart
-  createdAt DateTime @default(now())             // Timestamp for when the cart entry was created
-  updatedAt DateTime @updatedAt                  // Timestamp for the last update
-
-  user      User    @relation(fields: [userId], references: [id]) // Relation to the User model
-  product   Product @relation(fields: [productId], references: [id]) // Relation to the Product model
+  id        String   @id @default(cuid())
+  productId String
+  quantity  Int      @default(1)
+  size      String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }

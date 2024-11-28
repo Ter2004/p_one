@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen bg-gray-50 text-gray-900`}
       >
         {/* Header */}
-        <header className="bg-blue-600 text-white shadow-md">
+        <header className="bg-black text-white shadow-md">
           <div className="container mx-auto flex justify-between items-center p-4">
             <h1 className="text-2xl font-bold text-black !text-black">
               <a href="/" aria-label="Navigate to Home">
@@ -48,7 +48,7 @@ export default function RootLayout({
         <footer className="bg-gray-800 text-gray-300 py-6">
           <div className="container mx-auto text-center">
             <p className="text-sm">
-              &copy; {new Date().getFullYear()} My App. All rights reserved.
+              &copy; {new Date().getFullYear()} SneakTer Store. All rights reserved.
             </p>
             <nav aria-label="Footer Navigation" className="mt-2">
               <a href="/privacy" className="hover:underline px-2">

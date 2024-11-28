@@ -38,7 +38,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-100">
+    <div className="flex items-center justify-center min-h-screen ">
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-center mb-6 text-black">Login</h1>
         {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>} {/* Show error message */}
@@ -88,15 +88,7 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Forgot Password */}
-          <div className="text-right mb-4">
-            <a
-              href="/forgot-password"
-              className="text-sm text-blue-500 hover:underline"
-            >
-              Forgot password?
-            </a>
-          </div>
+        
 
           {/* Submit Button */}
           <button
