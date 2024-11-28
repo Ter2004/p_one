@@ -21,6 +21,7 @@ export default function ShopPage() {
   const [cart, setCart] = useState<CartItem[]>([]); // Cart items state
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState<string | null>(null); // Error state
+  const [searchTerm, setSearchTerm] = useState(''); // Search term state
   const router = useRouter();
 
   useEffect(() => {
@@ -54,10 +55,18 @@ export default function ShopPage() {
 
   // Add product to cart with size and quantity
   const handleAddToCart = (product: Product, size: string, quantity: number) => {
-    if (!size.trim()) {
-      alert('Please enter a size!');
+    const sizeNumber = parseInt(size);
+
+    if (!size.trim() || isNaN(sizeNumber)) {
+      alert('Please enter a valid size!');
       return;
     }
+
+    if (sizeNumber < 37 || sizeNumber > 46) {
+      alert('Only size 37-46 is allowed!');
+      return;
+    }
+
     if (quantity <= 0) {
       alert('Quantity must be greater than zero!');
       return;
@@ -85,6 +94,11 @@ export default function ShopPage() {
 
   const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
 
+  // Filter products based on search term
+  const filteredProducts = products.filter((product) =>
+    product.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   if (loading) {
     return <p>Loading products...</p>;
   }
@@ -101,25 +115,36 @@ export default function ShopPage() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push('/cart')}
-            className="px-4 py-2 bg-blue-500 text-white font-medium rounded hover:bg-blue-600"
+            className="px-4 py-2 bg-blue-500 text-white font-medium rounded hover:bg-blue-600 border border-black"
           >
             Cart ({totalItemsInCart})
           </button>
           <img
             src="/images/back.png"
             alt="Back"
-            className="w-10 h-10 cursor-pointer"
+            className="w-10 h-10 cursor-pointer border border-black"
             onClick={() => router.push('/main')}
           />
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-6">
+        <input
+          type="text"
+          placeholder="Search for products..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full px-4 py-2 border border-black rounded-lg text-gray-700"
+        />
+      </div>
+
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div
             key={product.id}
-            className="bg-white p-4 rounded-lg shadow hover:shadow-xl transition"
+            className="bg-white p-4 rounded-lg shadow hover:shadow-xl transition border border-black"
           >
             <img
               src={product.image}
@@ -131,10 +156,10 @@ export default function ShopPage() {
 
             {/* Size Input */}
             <input
-              type="text"
+              type="number"
               id={`size-${product.id}`}
-              placeholder="Enter size (e.g., EU 42)"
-              className="block mt-4 px-4 py-2 border rounded-lg text-gray-700 w-full"
+              placeholder="Enter size (37-46)"
+              className="block mt-4 px-4 py-2 border border-black rounded-lg text-gray-700 w-full"
             />
 
             {/* Quantity Input */}
@@ -143,7 +168,7 @@ export default function ShopPage() {
               id={`quantity-${product.id}`}
               defaultValue={1}
               min={1}
-              className="block mt-4 px-4 py-2 border rounded-lg text-gray-700 w-full"
+              className="block mt-4 px-4 py-2 border border-black rounded-lg text-gray-700 w-full"
             />
 
             <button
@@ -155,7 +180,7 @@ export default function ShopPage() {
                 );
                 handleAddToCart(product, size, quantity);
               }}
-              className="mt-4 px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+              className="mt-4 px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600 border border-black"
             >
               Add to Cart
             </button>
