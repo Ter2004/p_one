@@ -20,8 +20,10 @@ export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]); // Product data state
   const [cart, setCart] = useState<CartItem[]>([]); // Cart items state
   const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState<string | null>(null); // Error state
+  const [error, setError] =useState<string | null>(null); // Error state
   const [searchTerm, setSearchTerm] = useState(''); // Search term state
+  const [showPopup, setShowPopup] = useState(false); // Pop-up state
+  const [notification, setNotification] = useState<string | null>(null); // Notification state
   const router = useRouter();
 
   useEffect(() => {
@@ -57,13 +59,8 @@ export default function ShopPage() {
   const handleAddToCart = (product: Product, size: string, quantity: number) => {
     const sizeNumber = parseInt(size);
 
-    if (!size.trim() || isNaN(sizeNumber)) {
-      alert('Please enter a valid size!');
-      return;
-    }
-
-    if (sizeNumber < 37 || sizeNumber > 46) {
-      alert('Only size 37-46 is allowed!');
+    if (!size.trim() || isNaN(sizeNumber) || sizeNumber < 37 || sizeNumber > 46) {
+      setShowPopup(true); // Show pop-up
       return;
     }
 
@@ -89,7 +86,10 @@ export default function ShopPage() {
 
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart)); // Save cart to localStorage
-    alert(`${quantity} ${product.name}(s) added to cart!`);
+
+    // Show notification
+    setNotification(`${quantity} ${product.name}(s) added to cart!`);
+    setTimeout(() => setNotification(null), 3000); // Remove notification after 3 seconds
   };
 
   const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
@@ -99,30 +99,27 @@ export default function ShopPage() {
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  if (loading) {
-    return <p>Loading products...</p>;
-  }
-
-  if (error) {
-    return <p className="text-center text-red-500">Error: {error}</p>;
-  }
-
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Sneakers</h1>
         <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.push('/cart')}
-            className="px-4 py-2 bg-blue-500 text-white font-medium rounded hover:bg-blue-600 border border-black"
-          >
-            Cart ({totalItemsInCart})
-          </button>
+          <div className="relative flex items-center">
+            <img
+              src="/images/cart.jpg"
+              alt="Cart"
+              className="w-10 h-10 cursor-pointer"
+              onClick={() => router.push('/cart')}
+            />
+            <span className="absolute top-0 right-0 bg-red-500 text-white text-sm rounded-full px-2">
+              {totalItemsInCart}
+            </span>
+          </div>
           <img
             src="/images/back.png"
             alt="Back"
-            className="w-10 h-10 cursor-pointer border border-black"
+            className="w-10 h-10 cursor-pointer  "
             onClick={() => router.push('/main')}
           />
         </div>
@@ -187,6 +184,31 @@ export default function ShopPage() {
           </div>
         ))}
       </div>
+
+      {/* Pop-up for invalid size */}
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+            <h2 className="text-lg font-semibold text-red-500 mb-4">
+              Invalid Size
+            </h2>
+            <p className="text-gray-700">Only sizes 37-46 are allowed!</p>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="mt-4 px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Notification for add to cart */}
+      {notification && (
+        <div className="fixed top-5 right-5 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50">
+          {notification}
+        </div>
+      )}
     </div>
   );
 }

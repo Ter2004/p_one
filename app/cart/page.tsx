@@ -158,7 +158,7 @@ export default function CartPage() {
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded shadow-lg text-center">
             <h2 className="text-xl font-semibold mb-4">Confirm Purchase</h2>
-            <p className="text-gray-700 mb-4">Are you sure you want to clear your cart?</p>
+            <p className="text-gray-700 mb-4">Are you sure you want to proceed with this purchase?</p>
             <div className="flex justify-center gap-4">
               <button
                 onClick={confirmClearCart}

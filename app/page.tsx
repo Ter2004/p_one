@@ -11,7 +11,7 @@ export default function Home() {
       <div className="text-center">
         {/* Updated Image Component */}
         <Image
-          src="/images/logo.jpg" // Reference the image from the public folder
+          src="/images/logo.png" // Reference the image from the public folder
           alt="Shopping Online"
           width={500} // Adjust width
           height={100} // Adjust height
