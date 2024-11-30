@@ -2,113 +2,155 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/app/services/authservice'; // Import login function
+import Image from 'next/image';
+import { login } from '@/app/services/authservice';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-    if (loading) return; // Prevent duplicate login attempts
+    if (loading) return;
     e.preventDefault();
-    setError(''); // Clear previous errors
-    setLoading(true); // Set loading state to true
+    setError('');
+    setLoading(true);
 
     if (!email || !password) {
       setError('Please fill out all fields.');
-      setLoading(false); // Reset loading state
+      setLoading(false);
       return;
     }
 
     try {
-      const data = await login(email, password); // Call login API
+      const data = await login(email, password);
 
-      // Redirect all users (admin and user) to the main page after login
       router.push('/main');
-      console.log(`${data.role} login successful!`); // Log the role
+      console.log(`${data.role} login successful!`);
     } catch (err: any) {
       setError(err.message || 'Login failed. Please try again.');
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen ">
-      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-6 text-black">Login</h1>
-        {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>} {/* Show error message */}
-        <form onSubmit={handleLogin}>
-          {/* Email Input */}
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-black mb-1"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-black"
-              placeholder="Enter your email"
-            />
-          </div>
+    <div className="flex flex-col lg:flex-row items-center justify-center min-h-screen bg-white">
+      {/* Left Section - Login Form */}
+      <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-6 lg:p-16">
+        <h1 className="text-4xl font-extrabold text-gray-900 mb-6">SneakTer Store</h1>
+        <div className="w-full max-w-sm">
+          <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">Login</h1>
+          {error && (
+            <p className="text-red-500 text-sm mb-4 text-center">
+              {error}
+            </p>
+          )}
+          <form onSubmit={handleLogin}>
+            {/* Email Input */}
+            <div className="mb-6">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-800 mb-2"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Enter your email"
+              />
+            </div>
 
-          {/* Password Input */}
-          <div className="mb-4 relative">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-black mb-1"
-            >
-              Password
-            </label>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300 text-black"
-              placeholder="Enter your password"
-            />
+            {/* Password Input */}
+            <div className="mb-6 relative">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-800 mb-2"
+              >
+                Password
+              </label>
+              <input
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute top-9 right-3 text-gray-500 hover:text-gray-700"
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
+            </div>
+
+            {/* Submit Button */}
             <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-8 text-gray-600 hover:text-gray-800 focus:outline-none"
+              type="submit"
+              className={`w-full py-3 text-white font-bold rounded-lg transition duration-300 ${
+                loading
+                  ? 'bg-blue-300 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg transform hover:scale-105'
+              }`}
+              disabled={loading}
             >
-              {showPassword ? 'Hide' : 'Show'}
+              {loading ? 'Logging in...' : 'Login'}
             </button>
-          </div>
+          </form>
 
-        
+          {/* Signup Link */}
+          <p className="mt-6 text-center text-sm text-gray-700">
+            "Yo, new around here? Create an account, homie!"{' '}
+            <a href="/signup" className="text-blue-500 hover:underline">
+              Signup
+            </a>
+          </p>
+        </div>
+      </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className={`w-full py-2 px-4 font-bold rounded-lg transition duration-300 ${
-              loading ? 'bg-blue-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'
-            }`}
-            disabled={loading} // Disable button when loading
+      {/* Right Section - Jordan Image */}
+      <div className="relative w-full lg:w-1/2 h-80 lg:h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <Image
+          src="/images/jordan.png"
+          alt="Jordan Shoe"
+          layout="fill"
+          objectFit="cover"
+          objectPosition="center"
+        />
+
+        {/* Quote */}
+        <div className="absolute text-center text-white z-10">
+          <h2
+            className="text-5xl font-extrabold text-red-500 italic mb-4"
+            style={{
+              WebkitTextStroke: '1px black',
+              textShadow: '3px 3px 5px rgba(0, 0, 0, 0.8)',
+            }}
           >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
-
-        {/* Signup Link */}
-        <p className="mt-6 text-center text-sm text-black">
-          Don’t have an account?{' '}
-          <a href="/signup" className="text-blue-500 hover:underline">
-            Signup
-          </a>
-        </p>
+            It’s not just a shoe,
+          </h2>
+          <h3
+            className="text-4xl font-semibold text-white italic"
+            style={{
+              WebkitTextStroke: '1px black',
+              textShadow: '3px 3px 5px rgba(0, 0, 0, 0.8)',
+            }}
+          >
+            it’s a lifestyle.
+          </h3>
+        </div>
       </div>
     </div>
   );

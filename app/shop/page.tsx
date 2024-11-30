@@ -17,13 +17,14 @@ interface CartItem extends Product {
 }
 
 export default function ShopPage() {
-  const [products, setProducts] = useState<Product[]>([]); // Product data state
-  const [cart, setCart] = useState<CartItem[]>([]); // Cart items state
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] =useState<string | null>(null); // Error state
-  const [searchTerm, setSearchTerm] = useState(''); // Search term state
-  const [showPopup, setShowPopup] = useState(false); // Pop-up state
-  const [notification, setNotification] = useState<string | null>(null); // Notification state
+  const [products, setProducts] = useState<Product[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [notification, setNotification] = useState<string | null>(null);
+  const [infoPopup, setInfoPopup] = useState(false); // Info pop-up state
   const router = useRouter();
 
   useEffect(() => {
@@ -50,17 +51,15 @@ export default function ShopPage() {
 
     fetchProducts();
 
-    // Load cart from localStorage
     const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
     setCart(storedCart);
   }, []);
 
-  // Add product to cart with size and quantity
   const handleAddToCart = (product: Product, size: string, quantity: number) => {
     const sizeNumber = parseInt(size);
 
     if (!size.trim() || isNaN(sizeNumber) || sizeNumber < 37 || sizeNumber > 46) {
-      setShowPopup(true); // Show pop-up
+      setShowPopup(true);
       return;
     }
 
@@ -85,16 +84,14 @@ export default function ShopPage() {
     }
 
     setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart)); // Save cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
 
-    // Show notification
     setNotification(`${quantity} ${product.name}(s) added to cart!`);
-    setTimeout(() => setNotification(null), 3000); // Remove notification after 3 seconds
+    setTimeout(() => setNotification(null), 3000);
   };
 
   const totalItemsInCart = cart.reduce((total, item) => total + item.quantity, 0);
 
-  // Filter products based on search term
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -103,7 +100,21 @@ export default function ShopPage() {
     <div className="p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Sneakers</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-3xl font-bold">Sneakers</h1>
+          {/* Info Icon as Image */}
+          <button
+            onClick={() => setInfoPopup(true)}
+            className="hover:opacity-80"
+            aria-label="Info"
+          >
+            <img
+              src="/images/info.png"
+              alt="Info"
+              className="w-6 h-6"
+            />
+          </button>
+        </div>
         <div className="flex items-center gap-4">
           <div className="relative flex items-center">
             <img
@@ -119,7 +130,7 @@ export default function ShopPage() {
           <img
             src="/images/back.png"
             alt="Back"
-            className="w-10 h-10 cursor-pointer  "
+            className="w-10 h-10 cursor-pointer"
             onClick={() => router.push('/main')}
           />
         </div>
@@ -184,6 +195,25 @@ export default function ShopPage() {
           </div>
         ))}
       </div>
+
+      {/* Info Pop-up */}
+      {infoPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg text-center max-w-md">
+            <img
+              src="/images/size.png"
+              alt="Size Chart"
+              className="w-full h-auto rounded-lg mb-4"
+            />
+            <button
+              onClick={() => setInfoPopup(false)}
+              className="mt-4 px-6 py-3 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Pop-up for invalid size */}
       {showPopup && (

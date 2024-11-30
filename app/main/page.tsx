@@ -39,35 +39,49 @@ export default function MainPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Full-Width Image with Rounded Corners */}
-      <div className="w-full overflow-hidden">
-        <Image
-          src="/images/nara.jpg" // Replace with your image path
-          alt="Full-Width Image"
-          width={1920}
-          height={600}
-          className="object-cover w-full h-[300px] sm:h-[400px] md:h-[500px] rounded-lg"
-          priority
-        />
+      {/* Full-Width Image with Rounded Corners and Border */}
+      <div className="relative w-full overflow-hidden">
+        <div className="border-4 border-black rounded-lg overflow-hidden">
+          <Image
+            src="/images/nara.jpg" // Replace with your image path
+            alt="Full-Width Image"
+            width={1920}
+            height={600}
+            className="object-cover w-full h-[300px] sm:h-[400px] md:h-[500px]"
+            priority
+          />
+        </div>
+        {/* Quote Text */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <h1
+            className="text-center text-white text-4xl sm:text-5xl font-bold"
+            style={{
+              WebkitTextStroke: '1px black', // Adds black outline
+              textShadow: '2px 2px 4px rgba(0, 0, 0, 0.6)', // Subtle shadow for depth
+            }}
+          >
+            Step into style, only at SneakTer Store.
+          </h1>
+        </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] space-y-4 mt-6">
+      {/* Main Content - Buttons */}
+      <div className="flex flex-col items-center justify-center mt-6 space-y-6">
         <button
           onClick={() => router.push('/shop')}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="px-8 py-4 text-xl bg-blue-500 text-white rounded-lg shadow-md hover:bg-blue-600 hover:shadow-lg transform hover:scale-105 transition duration-300"
         >
           Shopping
         </button>
         <button
           onClick={handleAdminClick}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          className="px-8 py-4 text-xl bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 hover:shadow-lg transform hover:scale-105 transition duration-300"
         >
           Admin
         </button>
         <button
           onClick={() => setLogoutConfirm(true)}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          className="px-8 py-4 text-xl bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 hover:shadow-lg transform hover:scale-105 transition duration-300"
         >
           Log Out
         </button>
